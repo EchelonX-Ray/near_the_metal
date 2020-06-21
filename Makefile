@@ -5,12 +5,12 @@ FILES   := custlib.o csysclib.o caller.o callee.o
 
 .PHONY: all rebuild clean
 
-all: static-prog dynamic-prog
+all: static-program dynamic-program
 
 rebuild: clean all
 
 clean:
-	rm -f static-prog dynamic-prog *.o
+	rm -f static-program dynamic-program *.o
 
 %.o: %.c
 	$(CC) $(CFLAGS) $^ -c -o $@
@@ -18,8 +18,8 @@ clean:
 %.o: %.s
 	$(CC) $(CFLAGS) $^ -c -o $@
 
-dynamic-prog: $(FILES)
+dynamic-program: $(FILES)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
-static-prog: $(FILES)
+static-program: $(FILES)
 	$(CC) -static $(CFLAGS) $^ $(LDFLAGS) -o $@
