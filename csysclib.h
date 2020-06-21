@@ -1,4 +1,3 @@
-// Require Linux on x86-64
 #if !defined(__linux__) || !defined(__x86_64__)
 #error "This only works on Linux on x86-64."
 #endif
