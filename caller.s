@@ -94,6 +94,13 @@ my_entry_pt:
   add $8, %rax
   add %rax, %rcx
   mov %rcx, %rdx
+  
+  # Ensure the stack pointer is aligned to a 16 byte boundry
+  mov %rsp, %rax
+  and $8, %rax
+  sub %rax, %rsp
+  
+  # Call my C function
   call my_c_func # this function has no parameters and no return data
   
   # Make the 'group_exit' system call

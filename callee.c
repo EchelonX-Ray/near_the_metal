@@ -1,7 +1,7 @@
 #include "csysclib.h"
 #include "custlib.h"
 
-int my_c_func(int argc, char*argv[], char* envp[]) {
+int my_c_func(int argc, char* argv[], char* envp[]) {
 	char* str = "Hello, World!\n";
 	char buff[100];
 	signed int i;
@@ -37,5 +37,5 @@ int my_c_func(int argc, char*argv[], char* envp[]) {
 	}
 	cprintf("\n");
 	
-	return 3;
+	return i;
 }
