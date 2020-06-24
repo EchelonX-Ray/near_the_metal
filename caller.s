@@ -16,13 +16,13 @@ my_entry_pt:
   mov %rsp, %rax
   jmp get_envp
   
-  # Get and copy to add NULL terminator to argv (Located: Just under argc on the stack)
+  # Get argv (Located: Just under argc on the stack)
   get_argv:
   mov %rsp, %rsi
+  
   mov $8, %rax
   mul %rdi
   add %rsp, %rax
-  
   # Get envp (Located: At the end of argv + 8 zero bytes [argc * 8 + 8], on the stack)
   get_envp:
   add $8, %rax
