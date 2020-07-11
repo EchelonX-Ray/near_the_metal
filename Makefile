@@ -1,7 +1,7 @@
 CC      := gcc
-CFLAGS  := -Wall -Wextra -O2 -march=native -m64 -ffreestanding -nostdlib -nostartfiles -g
+CFLAGS  := -Wall -Wextra -Wno-unused-parameter -O2 -march=native -m64 -ffreestanding -nostdlib -nostartfiles -g
 LDFLAGS := -e my_entry_pt
-FILES   := custlib.o csysclib.o caller.o callee.o
+FILES   := clib.o syscalls.o caller.o callee.o errno.o
 
 .PHONY: all rebuild clean
 
@@ -19,7 +19,7 @@ clean:
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 dynamic-program: $(FILES)
-	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+	$(CC) -dynamic $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 static-program: $(FILES)
 	$(CC) -static $(CFLAGS) $^ $(LDFLAGS) -o $@

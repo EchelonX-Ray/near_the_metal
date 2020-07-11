@@ -1,26 +1,14 @@
-#include "custlib.h"
-#include "csysclib.h"
+#include "clib.h"
+#include "syscalls.h"
 
-unsigned int strlen(register const char* str) {
-	if (str == 0) {
-		return 0;
-	}
-	register unsigned int i = 0;
-	while (str[i] != 0) {
-		i++;
-	}
-	return i;
-}
-
-void cprintf(char *str) {
+void print(char *str) {
 	if (str == 0) {
 		return;
 	}
-	cwrite(1, str, strlen(str));
+	write(1, str, strlen(str));
 	return;
 }
-
-void citoa(register signed int number, register char* buf, register signed int buf_len, register signed int base, register signed int set_width) {
+void itoa(register signed int number, register char* buf, register signed int buf_len, register signed int base, register signed int set_width) {
 	register signed long int num;
 	num = number;
 	if(base < 0) {
@@ -115,4 +103,42 @@ void citoa(register signed int number, register char* buf, register signed int b
 		}
 	}
 	return;
+}
+void* malloc(size_t size) {
+	if (size == 0) {
+		return NULL;
+	}
+	register void* retval;
+	retval = mmap(0, size + sizeof(size_t), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	*((size_t*)retval) = size + sizeof(size_t);
+	return retval + sizeof(size_t);
+}
+void free(void* ptr) {
+	if (ptr == NULL) {
+		return;
+	}
+	signed int retval;
+	ptr -= sizeof(size_t);
+	retval = munmap(ptr, *((size_t*)ptr));
+	return;
+}
+void *memcpy(void* dest, const void* src, size_t n) {
+	while (n > 0) {
+		n--;
+		((char*)dest)[n] = ((char*)src)[n];
+	}
+	return dest;
+}
+unsigned int strlen(register const char* str) {
+	if (str == 0) {
+		return 0;
+	}
+	register unsigned int i = 0;
+	while (str[i] != 0) {
+		i++;
+	}
+	return i;
+}
+void exit(signed int code) {
+	_exit(code);
 }

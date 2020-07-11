@@ -33,10 +33,27 @@ my_entry_pt:
   and $0xF, %rax
   sub %rax, %rsp
   
+  # Call the C function to setup errno
+  # Save the values we have found for later
+  push %rdi
+  push %rsi
+  push %rdx
+  push %rdx # Push rdx again because we need 16 byte stack alignment for ABI conformance
+  call __errno_init_errno
+  pop %rdx
+  pop %rdx
+  pop %rsi
+  pop %rdi
+  
   # Call my C function
-  call my_c_func # this function has no parameters and no return data
+  call main # this function has no parameters and no return data
   
   # Make the 'group_exit' system call
   mov %rax, %rdi # set the single parameter, the exit code to 0 for normal exit
   mov $231, %rax # set the syscall to the index of 'group_exit' (231)
   syscall
+  
+  # Spin if we somehow make it here.  This should not be reachable.
+  loop:
+  jmp loop
+  
