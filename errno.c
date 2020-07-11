@@ -21,7 +21,3 @@ signed int* __errno_location() {
 	// This should never happen.  It should not be reachable.
 	return NULL;
 }
-
-void test() {
-	errno = 0;
-}
