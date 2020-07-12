@@ -47,10 +47,14 @@ my_entry_pt:
   
   # Call my C function
   call main # this function has no parameters and no return data
+  push %rax
+  push %rax
   
   # Clean up
   call __destroy_libc
   
+  pop %rax
+  pop %rax
   # Make the 'group_exit' system call
   mov %rax, %rdi # set the single parameter, the exit code to 0 for normal exit
   mov $231, %rax # set the syscall to the index of 'group_exit' (231)

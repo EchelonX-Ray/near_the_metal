@@ -6,4 +6,4 @@ TODO:
 -Clean up custom itoa() implementation  
 -Create and run tests to verify the correctness of custom itoa() implementation  
 -Assembly micro-optimization with C fallback.  
--Errno functions need to be wrapped in mutexs to avoid race conditions  
+-Errno functions need to be wrapped in mutexes to avoid race conditions  

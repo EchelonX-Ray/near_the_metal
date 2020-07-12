@@ -42,6 +42,7 @@ void mutex_lock(mutex* mut);
 void mutex_unlock(mutex* mut);
 void print(char* str);
 void itoa(register signed int number, register char* buf, register signed int buf_len, register signed int base, register signed int set_width);
+void* calloc(size_t nmemb, size_t size);
 void* malloc(size_t size);
 void free(void* ptr);
 void *memset(void *s, signed int c, size_t n);
