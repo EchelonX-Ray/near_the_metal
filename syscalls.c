@@ -3,9 +3,36 @@
 #include <asm/unistd.h>
 #include <asm/errno.h>
 
-signed int write(signed int fd, const void *buf, size_t count) {
+signed int read(signed int fd, const void* buf, size_t count) {
+	register signed int retval;
+	SYSCALL3_R(retval, __NR_read, fd, buf, count);
+	if (retval < 0) {
+		errno = -retval;
+		retval = -1;
+	}
+	return retval;
+}
+signed int write(signed int fd, const void* buf, size_t count) {
 	register signed int retval;
 	SYSCALL3_R(retval, __NR_write, fd, buf, count);
+	if (retval < 0) {
+		errno = -retval;
+		retval = -1;
+	}
+	return retval;
+}
+signed int open(const char* pathname, unsigned int flags, mode_t mode) {
+	register signed int retval;
+	SYSCALL3_R(retval, __NR_open, pathname, flags, mode);
+	if (retval < 0) {
+		errno = -retval;
+		retval = -1;
+	}
+	return retval;
+}
+signed int close(signed int fd) {
+	register signed int retval;
+	SYSCALL1_R(retval, __NR_close, fd);
 	if (retval < 0) {
 		errno = -retval;
 		retval = -1;
@@ -109,7 +136,7 @@ signed int munmap(void *addr, size_t length) {
 	return -1;
 }
 
-pid_t gettid(void) {
+pid_t gettid() {
 	register pid_t retval;
 	SYSCALL0_R(retval, __NR_gettid);
 	return retval;
@@ -144,7 +171,7 @@ pid_t fork() {
 	return retval;
 }
 
-signed int nanosleep(const struct timespec *req, struct timespec *rem) {
+signed int nanosleep(const struct timespec* req, struct timespec* rem) {
 	register signed int retval;
 	SYSCALL2_R(retval, __NR_nanosleep, req, rem);
 	if (retval < 0) {
@@ -152,4 +179,34 @@ signed int nanosleep(const struct timespec *req, struct timespec *rem) {
 		return -1;
 	}
 	return 0;
+}
+
+signed int stat(const char *path, struct stat* statbuf) {
+	register signed int retval;
+	SYSCALL2_R(retval, __NR_stat, path, statbuf);
+	if (retval < 0) {
+		errno = -retval;
+		return -1;
+	}
+	return retval;
+}
+
+signed int fstat(signed int fd, struct stat* statbuf) {
+	register signed int retval;
+	SYSCALL2_R(retval, __NR_fstat, fd, statbuf);
+	if (retval < 0) {
+		errno = -retval;
+		return -1;
+	}
+	return retval;
+}
+
+signed int futex(signed int *uaddr, unsigned int futex_op, signed int val, const struct timespec *timeout, signed int *uaddr2, signed int val3) {
+	register signed int retval;
+	SYSCALL6_R(retval, __NR_futex, uaddr, futex_op, val, timeout, uaddr2, val3);
+	if (retval < 0) {
+		errno = -retval;
+		return -1;
+	}
+	return retval;
 }

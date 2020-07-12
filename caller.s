@@ -39,7 +39,7 @@ my_entry_pt:
   push %rsi
   push %rdx
   push %rdx # Push rdx again because we need 16 byte stack alignment for ABI conformance
-  call __errno_init_errno
+  call __init_libc
   pop %rdx
   pop %rdx
   pop %rsi
@@ -47,6 +47,9 @@ my_entry_pt:
   
   # Call my C function
   call main # this function has no parameters and no return data
+  
+  # Clean up
+  call __destroy_libc
   
   # Make the 'group_exit' system call
   mov %rax, %rdi # set the single parameter, the exit code to 0 for normal exit

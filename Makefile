@@ -1,5 +1,5 @@
 CC      := gcc
-CFLAGS  := -Wall -Wextra -Wno-unused-parameter -O2 -march=native -m64 -ffreestanding -nostdlib -nostartfiles -g
+CFLAGS  := -Wall -Wextra -O2 -march=native -m64 -ffreestanding -nostdlib -nostartfiles -g
 LDFLAGS := -e my_entry_pt
 FILES   := clib.o syscalls.o caller.o callee.o errno.o
 
