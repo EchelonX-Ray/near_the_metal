@@ -8,6 +8,7 @@
 #include <asm/unistd.h>
 #include <asm/fcntl.h>
 #include <asm/stat.h>
+#include <linux/time.h>
 #include <linux/mman.h>
 #include <sys/types.h>
 #include <stddef.h>

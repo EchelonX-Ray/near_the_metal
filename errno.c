@@ -8,7 +8,7 @@ void __errno_init_errno() {
 	__errno_base_threadmem = NULL;
 	__errno_base_threadmem_size = 0;
 	__errno_base_thread_count = 0;
-	__errno_base_thread_mutex = 1;
+	mutex_init(&__errno_base_thread_mutex);
 	return;
 }
 
@@ -35,6 +35,7 @@ void __errno_remove_thread_entry(pid_t tid) {
 		__errno_base_thread_mutex = 0;
 	}
 	*/
+	mutex_lock(&__errno_base_thread_mutex);
 	unsigned int j;
 	unsigned int i;
 	j = 0;
@@ -53,16 +54,19 @@ void __errno_remove_thread_entry(pid_t tid) {
 	} else {
 		__errno_base_thread_count--;
 	}
+	mutex_unlock(&__errno_base_thread_mutex);
 	return;
 }
 
 void __errno_add_thread_entry(pid_t tid) {
+	mutex_lock(&__errno_base_thread_mutex);
 	if ((__errno_base_thread_count + 1) * sizeof(struct __errno_info) > PAGE_SIZE) {
 		exit(-1);
 	}
 	__errno_base_threadmem[__errno_base_thread_count].tid = tid;
 	__errno_base_threadmem[__errno_base_thread_count].value = 0;
 	__errno_base_thread_count++;
+	mutex_unlock(&__errno_base_thread_mutex);
 	return;
 }
 

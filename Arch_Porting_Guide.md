@@ -12,27 +12,21 @@ This should be rewritten and IFDEFed in the clone syscall C function wrapper in
 syscalls.c  
   
 3) For the:  
-  
-mutex_lock() function in clib.c and 
-struct _mutex declaration  
-  
+-mutex_lock() function in clib.c and  
+-struct _mutex declaration  
 the variables:  
-  
-lock_flag,  
-lock_count, and  
-value  
-  
-Should be the same type, and should be exactly 4 bytes in size.  
+-lock_flag,  
+-lock_count, and  
+-value  
+Should be the same type, and should be exactly 4 bytes in size on the target architecture.  
   
 4) The inline assembly inside functions:  
-  
-mutex_lock() in clib.c and  
-mutex_unlock()  
-  
+-mutex_lock() in clib.c and  
+-mutex_unlock()  
 should be rewritten and IFDEFed to the target architecture's  
 equivalent of atomic instructions  
   
-5) The bootstrap _start replacement program will have to rewriten and conditionally  
+5) The bootstrap _start replacement program will have to be rewriten and conditionally  
 included by architecture.  This is the program currently called "caller.s" and is the custom  
 entry point for the program, replacing "_start" with "my_entry_pt".  
   

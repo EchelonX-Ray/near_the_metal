@@ -1,7 +1,7 @@
 CC      := gcc
-CFLAGS  := -Wall -Wextra -O2 -march=native -m64 -ffreestanding -nostdlib -nostartfiles -g
+CFLAGS  := -Wall -Wextra -std=c99 -O2 -march=native -m64 -ffreestanding -nostdlib -nostartfiles -g
 LDFLAGS := -e my_entry_pt
-FILES   := clib.o syscalls.o caller.o callee.o errno.o
+FILES   := clib.o syscalls.o caller.o callee.o errno.o clib_supp.o
 
 .PHONY: all rebuild clean
 
