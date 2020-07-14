@@ -40,14 +40,11 @@ signed int join_thread(ethread_t* thread, void** retval);
 void mutex_init(mutex* mut);
 void mutex_lock(mutex* mut);
 void mutex_unlock(mutex* mut);
-void print(char* str);
-void itoa(register signed int number, register char* buf, register signed int buf_len, register signed int base, register signed int set_width);
 void* calloc(size_t nmemb, size_t size);
 void* malloc(size_t size);
 void free(void* ptr);
 void *memset(void *s, signed int c, size_t n);
 void *memcpy(void* dest, const void* src, size_t n);
-unsigned int strlen(register const char* str);
 void exit(signed int code);
 
 #endif
