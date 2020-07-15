@@ -183,6 +183,19 @@ void mutex_unlock(mutex* mut) {
 	
 	return;
 }
+signed int sigemptyset(sigset_t *set) {
+	*set = 0;
+	return 0;
+}
+signed int sigaction(signed int signum, const struct sigaction* act, struct sigaction* oldact) {
+	return rt_sigaction(signum, act, oldact, sizeof(sigset_t));
+}
+pid_t wait(signed int* wstatus) {
+	return waitpid(-1, wstatus, 0);
+}
+pid_t waitpid(pid_t pid, signed int* wstatus, signed int options) {
+	return wait4(pid, wstatus, options, NULL);
+}
 void* calloc(size_t nmemb, size_t size) {
 	if (nmemb == 0 || size == 0) {
 		return 0;

@@ -5,13 +5,17 @@
 #ifndef _insertion_syscalls_h
 #define _insertion_syscalls_h
 
+#include <sys/types.h>
+#include <linux/time.h>
+#include <linux/mman.h>
+#include <linux/types.h>
+#include <linux/resource.h>
+#include <stddef.h>
 #include <asm/unistd.h>
 #include <asm/fcntl.h>
 #include <asm/stat.h>
-#include <linux/time.h>
-#include <linux/mman.h>
-#include <sys/types.h>
-#include <stddef.h>
+#include <asm/errno.h>
+#include <asm/signal.h>
 
 #define SYSCALL0_V(callnum) \
 	{ __asm__ __volatile__ ("syscall\n" : : "a" (callnum) : "rcx", "r11", "memory", "cc"); }
@@ -66,6 +70,9 @@ signed int munmap(void *addr, size_t length);
 pid_t gettid();
 pid_t clone(signed int (*fn)(void*), void* stack, unsigned long flags, void* arg, signed int* parent_tid, unsigned long tls, signed int* child_tid);
 pid_t fork();
+pid_t wait4(pid_t pid, signed int* wstatus, signed int options, struct rusage* rusage);
+signed int ioctl(signed int fd, unsigned long request, void* argp);
+signed int rt_sigaction(signed int signum, const struct sigaction* act, struct sigaction* oldact, size_t sigsetsize);
 signed int nanosleep(const struct timespec* req, struct timespec* rem);
 signed int stat(const char *path, struct stat* statbuf);
 signed int fstat(signed int fd, struct stat* statbuf);

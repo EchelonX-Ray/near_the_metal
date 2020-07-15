@@ -2,7 +2,7 @@
 #include "clib_string.h"
 #include "syscalls.h"
 
-signed int main(unsigned int argc, char* argv[], char* envp[]) {	
+signed int main(unsigned int argc, char* argv[], char* envp[]) {
 	float f = 10000000000.3;
 	double d = 10000000000.3;
 	long double D = 10000000000.3;

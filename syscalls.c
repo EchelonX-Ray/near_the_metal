@@ -1,7 +1,5 @@
 #include "syscalls.h"
 #include "errno.h"
-#include <asm/unistd.h>
-#include <asm/errno.h>
 
 signed int read(signed int fd, const void* buf, size_t count) {
 	register signed int retval;
@@ -167,6 +165,36 @@ pid_t fork() {
 	if (retval < 0) {
 		errno = -retval;
 		return -1;
+	}
+	return retval;
+}
+
+pid_t wait4(pid_t pid, signed int* wstatus, signed int options, struct rusage* rusage) {
+	register pid_t retval;
+	SYSCALL4_R(retval, __NR_wait4, pid, wstatus, options, rusage);
+	if (retval < 0) {
+		errno = -retval;
+		retval = -1;
+	}
+	return retval;
+}
+
+signed int ioctl(signed int fd, unsigned long request, void* argp) {
+	register signed int retval;
+	SYSCALL3_R(retval, __NR_ioctl, fd, request, argp);
+	if (retval < 0) {
+		errno = -retval;
+		retval = -1;
+	}
+	return retval;
+}
+
+signed int rt_sigaction(signed int signum, const struct sigaction* act, struct sigaction* oldact, size_t sigsetsize) {
+	register signed int retval;
+	SYSCALL4_R(retval, __NR_rt_sigaction, signum, act, oldact, sigsetsize);
+	if (retval < 0) {
+		errno = -retval;
+		retval = -1;
 	}
 	return retval;
 }

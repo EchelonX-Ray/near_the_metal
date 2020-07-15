@@ -8,6 +8,7 @@
 //#include <asm/stat.h>
 //#include <linux/mman.h>
 #include <sys/types.h>
+#include <asm/signal.h>
 //#include <stddef.h>
 
 extern size_t PAGE_SIZE;
@@ -40,6 +41,10 @@ signed int join_thread(ethread_t* thread, void** retval);
 void mutex_init(mutex* mut);
 void mutex_lock(mutex* mut);
 void mutex_unlock(mutex* mut);
+signed int sigemptyset(sigset_t *set);
+signed int sigaction(signed int signum, const struct sigaction* act, struct sigaction* oldact);
+pid_t wait(signed int* wstatus);
+pid_t waitpid(pid_t pid, signed int* wstatus, signed int options);
 void* calloc(size_t nmemb, size_t size);
 void* malloc(size_t size);
 void free(void* ptr);
