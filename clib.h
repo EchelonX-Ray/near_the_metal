@@ -10,7 +10,7 @@
 #include <sys/types.h>
 //#include <stddef.h>
 
-size_t PAGE_SIZE;
+extern size_t PAGE_SIZE;
 
 struct ethread {
 	volatile pid_t tid __attribute__((aligned(4)));

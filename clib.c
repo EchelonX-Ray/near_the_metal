@@ -4,6 +4,8 @@
 #include <linux/sched.h>
 #include <linux/futex.h>
 
+size_t PAGE_SIZE;
+
 void __init_libc() {
 	__errno_init_errno();
 	struct stat statbuf;

@@ -13,11 +13,11 @@ struct __errno_info {
 	pid_t tid;
 };
 
-struct __errno_info __errno_base;
-volatile struct __errno_info* __errno_base_threadmem;
-volatile size_t __errno_base_threadmem_size;
-volatile unsigned int __errno_base_thread_count;
-mutex __errno_base_thread_mutex;
+extern struct __errno_info __errno_base;
+extern volatile struct __errno_info* __errno_base_threadmem;
+extern volatile size_t __errno_base_threadmem_size;
+extern volatile unsigned int __errno_base_thread_count;
+extern mutex __errno_base_thread_mutex;
 
 void __errno_init_errno();
 void __errno_init_thread();

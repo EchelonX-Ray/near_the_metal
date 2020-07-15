@@ -2,6 +2,12 @@
 #include "syscalls.h"
 #include "clib.h"
 
+struct __errno_info __errno_base;
+volatile struct __errno_info* __errno_base_threadmem;
+volatile size_t __errno_base_threadmem_size;
+volatile unsigned int __errno_base_thread_count;
+mutex __errno_base_thread_mutex;
+
 void __errno_init_errno() {
 	__errno_base.tid = gettid();
 	__errno_base.value = 0;
