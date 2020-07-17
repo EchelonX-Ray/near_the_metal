@@ -9,14 +9,14 @@ float c_sqrtf(register float x) {
 	}
 	/*
 	TODO: Handle NaN
-	if (x < 0.0) {
-		// TODO: return NaN;
+	if (x == NaN) {
+		return NaN;
 	}
 	*/
 	/*
 	TODO: Handle +Inf
-	if (x < 0.0) {
-		// TODO: return +Inf;
+	if (x == +Inf) {
+		return +Inf;
 	}
 	*/
 	
