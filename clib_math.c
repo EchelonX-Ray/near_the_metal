@@ -41,7 +41,7 @@ float c_sqrtf(register float x) {
 	// --The symbol ~ means approximately.
 	// 
 	// The procedure to find a square root is based on the Newton–Raphson method in Calculus math.
-	// The root(s) of a function are the value(s) that when passed into it correspond to that 
+	// The root(s) of a function are the value(s) that when passed into it, correspond to that 
 	// function's intersecting of the the X-Axis.  Or, in the other words, the value(s) of x that yield f(x) == 0.
 	// The Newton–Raphson method states that to find a better approximation of the root of a function f(x),
 	// Use the following formula with a starting approximation of the root(Our guess): 
