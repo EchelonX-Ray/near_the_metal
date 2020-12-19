@@ -340,6 +340,16 @@ double sqrt(register double x) {
 	// --new_guess(new_guess) is in variable new_guess
 	// --value_to_find_the_square_root_of(N) is in variable x
 	// --reciprocal_of_N(I) is in variable inverted
+	// 
+	// Additional IMPORTANT Notes/Edge Cases: 
+	// --Under certain circumstances, the guessed value can alternate when at the limits of the 
+	//   datatype's precision.  For this reason, the variable old_guess was added to track the guess 
+	//   before the previous guess.
+	// --The Newton-Raphson interation will converge on the square root if the starting guess is less 
+	//   than the square root.  However, in cases where we are trying to find the square root of a 
+	//   number less than 1, the square root will be both larger than that number and less than 1.  
+	//   In this case, we should start our guess with the number we are trying to find the square root 
+	//   of (x) instead of 1.  We can not start out with a guess of 0.  Doing so breaks the interation.
 	
 	register double guess;
 	register double new_guess;
