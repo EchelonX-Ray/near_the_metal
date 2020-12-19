@@ -1,24 +1,156 @@
 #include "clib_math.h"
+#include "clib_string.h"
 
-float c_sqrtf(register float x) {
+double sin(register double x) {
+	return cos(x + M_PI_2);
+}
+
+float sinf(register float x) {
+	return (float)(sin((double)x));
+}
+
+double cos(register double x) {
+	register double ret_val_sign;
+	
+	// The first step translates x into the first quadrant.
+	// It makes 0 <= x < 0.5PI
+	
+	// Make angle positive
+	// Cosine Identity: cos(x) = cos(-x)
+	if (x < 0.0) {
+		x = -x;
+	}
+	// Make angle no larger than 360 degrees (2PI) (not inclusive)
+	while (x >= 2 * M_PI) {
+		x -= 2 * M_PI;
+	}
+	// Handle quadrant 4
+	if (x >= 3 * M_PI_2) {
+		x = (2 * M_PI) - x;
+		ret_val_sign = 1.0;
+	// Handle quadrant 3
+	} else if (x >= M_PI) {
+		x = x - M_PI;
+		ret_val_sign = -1.0;
+	// Handle quadrant 2
+	} else if (x >= M_PI_2) {
+		x = M_PI - x;
+		ret_val_sign = -1.0;
+	// Handle quadrant 1
+	} else {
+		ret_val_sign = 1.0;
+	}
+	
+	// Now we can actually find the approximation of sin(x)
+	if (x == 0.0) {
+		return 1.0 * ret_val_sign;
+	}
+	if (x == M_PI_2) {
+		return 0.0;
+	}
+	//printf("[Trace A] x = %f\n", x);
+	
+	register double working_angle;
+	register double half_angle;
+	register double working_angle_value;
+	register double half_angle_value;
+	working_angle = M_PI_4;
+	half_angle = working_angle;
+	working_angle_value = sqrt(2.0) / 2.0;
+	half_angle_value = working_angle_value;
+	while (working_angle != x && half_angle > 0.0 && half_angle_value > 0.0) {
+		//printf("[Trace B] working_angle = %f, working_angle_value = %f\n", working_angle, working_angle_value);
+		half_angle /= 2.0;
+		half_angle_value = sqrt((half_angle_value + 1) / 2);
+		
+		register double sin_working_value;
+		register double sin_half_value;
+		sin_working_value = sqrt(1 - (working_angle_value * working_angle_value));
+		sin_half_value = sqrt(1 - (half_angle_value * half_angle_value));
+		if (working_angle < x) {
+			working_angle += half_angle;
+			working_angle_value = (working_angle_value * half_angle_value) - (sin_working_value * sin_half_value);
+		} else {
+			working_angle -= half_angle;
+			working_angle_value = (working_angle_value * half_angle_value) + (sin_working_value * sin_half_value);
+		}
+		//printf("[Trace C] working_angle = %f, working_angle_value = %f\n", working_angle, working_angle_value);
+	}
+	
+	return working_angle_value * ret_val_sign;
+	
+	/*
+	register double angle_val = M_PI_4;
+	register double angle_cos = sqrt(2.0) / 2.0;
+	register double half_angle = M_PI_4;
+	register double half_cos = angle_cos;
+	while (angle_val != x && half_angle > 0.0 && half_cos > 0.0) {
+		register double angle_sin;
+		register double half_sin;
+		half_angle /= 2.0;
+		//printf("[TraceA %f: %f]\n", angle_val, (1.0 + half_cos) / 2.0);
+		half_cos = sqrt((1.0 + half_cos) / 2.0); // Half-angle formula
+		printf("[TraceBa %f: %f]\n", angle_val, 1.0 - (half_cos * half_cos));
+		return sqrt(1.0 - (half_cos * half_cos));
+		printf("[TraceBb %f: %f]\n", angle_val, sqrt(1.0 - (half_cos * half_cos)));
+		half_sin = sqrt(1.0 - (half_cos * half_cos)); // Pythagorean Theorem
+		*/
+		//unsigned long int traceval_a = (unsigned long int)(1.0 - (angle_cos * angle_cos));
+		/*
+		double d0 = angle_cos;
+		unsigned long int traceval_a = *((unsigned long int*)(&d0));
+		unsigned int traceval_b = (unsigned int)(0xFFFFFFFF & (traceval_a >> 32));
+		unsigned int traceval_c = (unsigned int)(0xFFFFFFFF & (traceval_a >>  0));
+		char bfr[50];
+		itoa(traceval_b, bfr, 50, -16, 8);
+		write(1, bfr, 8);
+		itoa(traceval_c, bfr, 50, -16, 8);
+		write(1, bfr, 8);
+		printf("[TraceC %f: %f]\n", angle_val, angle_cos);
+		*/
+		/*
+		angle_sin = sqrt(1.0 - (angle_cos * angle_cos)); // Pythagorean Theorem
+		if (angle_val < x) {
+			angle_val += half_angle;
+			angle_cos = (angle_cos * half_cos) - (angle_sin * half_sin);
+			printf("TraceA %f\n", angle_cos);
+		} else {
+			angle_val -= half_angle;
+			printf("TraceB %f\n", (angle_cos * half_cos));
+			printf("TraceB %f\n", angle_sin);
+			printf("TraceB %f\n", half_sin);
+			angle_cos = (angle_cos * half_cos) + (angle_sin * half_sin);
+		}
+	}
+	
+	if (ret_val_sign == 1) {
+		return angle_cos;
+	} else {
+		return -angle_cos;
+	}
+	*/
+}
+
+float cosf(register float x) {
+	return (float)(cos((double)x));
+}
+
+double sqrt(register double x) {
 	if (x == 0.0) {
 		return 0.0;
 	}
 	if (x < 0.0) {
-		// TODO: return NaN;
+		exit(1);
+		return NAN;
 	}
-	/*
-	TODO: Handle NaN
-	if (x == NaN) {
-		return NaN;
+	if (x == NAN) {
+		exit(2);
+		return NAN;
 	}
-	*/
-	/*
-	TODO: Handle +Inf
-	if (x == +Inf) {
-		return +Inf;
+	if (x == +INFINITY) {
+		exit(3);
+		return +INFINITY;
 	}
-	*/
 	
 	/*
 	TODO: Inline ASM Optimization
@@ -28,8 +160,9 @@ float c_sqrtf(register float x) {
 	// 
 	// The process of computing a square root is an iterative process.  
 	// The process approches the correct answer as it is repeated.
-	// We will repeat the process until one of 3 things is true:
+	// We will repeat the process until one of 4 things is true:
 	// --The same number has been computed twice in a row.  (We have probably reached the limit of precision of the data type)
+	// --The same number has been computed twice but is alternating with another value.  (This is similar to the above case)
 	// --The number multiplied by itself (squared) equals the number we are trying to find the square root of.  (We have found the square root)
 	// --We have iterated 10000 times and are probably caught in some kind of infinite loop.  (Fault condition)  
 	//   If this happens, print an error so I know to look for a bug.
@@ -208,20 +341,34 @@ float c_sqrtf(register float x) {
 	// --value_to_find_the_square_root_of(N) is in variable x
 	// --reciprocal_of_N(I) is in variable inverted
 	
-	register float guess = 1.0;
-	register float inverted = 1.0 / x;
-	register unsigned int iteration_count = 0;
+	register double guess;
+	register double new_guess;
+	register double old_guess;
+	register double inverted;
+	register unsigned int iteration_count;
+	if (x < 1.0) {
+		guess = x;
+	} else {
+		guess = 1.0;
+	}
+	old_guess = 0.0;
+	inverted = 1.0 / x;
+	iteration_count = 0;
 	while (guess * guess != x && iteration_count < 10000) {
-		register float new_guess;
 		new_guess = (guess * (3.0 - (inverted * guess * guess))) / 2.0;
-		if (new_guess == guess) {
+		if (new_guess == guess || new_guess == old_guess) {
 			return guess;
 		}
+		old_guess = guess;
 		guess = new_guess;
 		iteration_count++;
 	}
 	if (iteration_count >= 10000) {
-		dprintf(2, "THIS IS A BUG!!  If you see this, please report it.  sqrtf(value) iterations hit or exceeded 10000.  Probable infinite loop broken on value == %f\n", x);
+		dprintf(2, "THIS IS A BUG!!  If you see this, please report it.  sqrt(value) iterations hit or exceeded 10000.  Probable infinite loop broken on value == %f\n", x);
 	}
 	return guess;
+}
+
+float sqrtf(register float x) {
+	return (float)(sqrt((double)x));
 }

@@ -221,7 +221,7 @@ signed long _dprintf(signed int fd, const char *format, unsigned long* gen_regs,
 				}
 				
 				unsigned int k;
-				k = 0;
+				k = 1;
 				while (tmp_ldouble >= 1000000000.0) {
 					tmp_ldouble /= 1000000000.0;
 					k++;
@@ -232,11 +232,16 @@ signed long _dprintf(signed int fd, const char *format, unsigned long* gen_regs,
 				while (j < k) {
 					v = tmp_ldouble;
 					tmp_ldouble -= v;
-					itoa(v, buff, 50, 10, 0);
+					if (j == 0) {
+						itoa(v, buff, 50, 10, 0);
+					} else {
+						itoa(v, buff, 50, 10, 9);
+					}
 					write(1, buff, strlen(buff));
 					tmp_ldouble *= 1000000000.0;
 					j++;
 				}
+				/*
 				v = tmp_ldouble;
 				tmp_ldouble -= v;
 				if (j) {
@@ -244,9 +249,10 @@ signed long _dprintf(signed int fd, const char *format, unsigned long* gen_regs,
 				}
 				itoa(v, buff, 50, 10, j);
 				write(1, buff, strlen(buff));
+				*/
 				
 				// Precision
-				tmp_ldouble *= 1000000000.0;
+				//tmp_ldouble *= 1000000000.0;
 				v = tmp_ldouble;
 				//tmp_ldouble -= v;
 				itoa(v, buff, 50, 10, 9);
