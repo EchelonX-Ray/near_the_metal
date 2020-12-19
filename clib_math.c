@@ -140,15 +140,12 @@ double sqrt(register double x) {
 		return 0.0;
 	}
 	if (x < 0.0) {
-		exit(1);
 		return NAN;
 	}
 	if (x == NAN) {
-		exit(2);
 		return NAN;
 	}
 	if (x == +INFINITY) {
-		exit(3);
 		return +INFINITY;
 	}
 	
