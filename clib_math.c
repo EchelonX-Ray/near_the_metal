@@ -2,7 +2,9 @@
 #include "clib_string.h"
 
 double sin(register double x) {
-	return cos(x + M_PI_2);
+	// A 90 degree phase shift to the right of a cosine function 
+	// is equivalent to a sine function
+	return cos(x - M_PI_2);
 }
 
 float sinf(register float x) {
@@ -12,18 +14,21 @@ float sinf(register float x) {
 double cos(register double x) {
 	register double ret_val_sign;
 	
-	// The first step translates x into the first quadrant.
-	// It makes 0 <= x < 0.5PI
+	// For simpler computation, translate the angle x, into the first quadrant. 
+	// Set the variable ret_val_sign to be ether positive or negative depending 
+	// on what the cosine is should be.
 	
-	// Make angle positive
+	// Make the angle positive
 	// Cosine Identity: cos(x) = cos(-x)
 	if (x < 0.0) {
 		x = -x;
 	}
+	
 	// Make angle no larger than 360 degrees (2PI) (not inclusive)
 	while (x >= 2 * M_PI) {
 		x -= 2 * M_PI;
 	}
+	
 	// Handle quadrant 4
 	if (x >= 3 * M_PI_2) {
 		x = (2 * M_PI) - x;
@@ -42,93 +47,127 @@ double cos(register double x) {
 	}
 	
 	// Now we can actually find the approximation of sin(x)
-	if (x == 0.0) {
-		return 1.0 * ret_val_sign;
+	
+	// Handle the easy cases
+	if (x <= 0.0) {
+		return ret_val_sign;
 	}
 	if (x == M_PI_2) {
 		return 0.0;
 	}
-	//printf("[Trace A] x = %f\n", x);
+	
+	// Now we have an angle in quadrant 1.
+	
+	// [How This Function Works]
+	// 
+	// The examples provided here are in degrees for ease of comprehension.
+	// However, the actual function takes radians.
+	// 
+	// Start at a 45 degree angle.
+	// The cosine of 45 degrees is (sqrt(2) / 2).
+	// 
+	// With these known values the following formulas are used:
+	// Half Angle Formula:             cos(x / 2) = sqrt((1 + cos(x)) / 2)
+	// Relationship of sine to cosine: sin(x) = sqrt(1 - (cos(x) * cos(x)))
+	// Add cosines:                    cos(a + b) = (cos(a) * cos(b)) - (sin(a) * sin(b))
+	// Subtract cosines:               cos(a - b) = (cos(a) * cos(b)) + (sin(a) * sin(b))
+	// 
+	// The general process is this:
+	// --The idea is to start with an estimation of 45 degrees and the known cosine value of that 
+	//   (sqrt(2) / 2).
+	// --Next, use the half angle formula to iteratively divide an angle, starting at 45 degrees, 
+	//   with the value of (sqrt(2) / 2), in half.
+	// --Then add or subtract the result to the previous estimation.
+	// 
+	// Here is an example: 
+	// To approximate the value of cos(56.25 degrees) to following process is preformed.
+	// 1) Start with a 45 degree angle and the known cosine value of it, (sqrt(2) / 2)
+	//      A = 45 deg
+	//      B = sqrt(2) / 2 = ~0.707
+	// 2) Next, starting again with 45 degrees and it's known cosine, divide the angle in half.
+	//      a = 45 deg
+	//      b = sqrt(2) / 2 = ~0.707
+	//      new_a = a / 2 = 22.5 deg
+	//      new_b = sqrt((1 + b) / 2) = ~0.924
+	// 3) new_a and new_b become the new values of a and b respectively.
+	//      a = new_a = 22.5 deg
+	//      b = new_b = ~0.924
+	// 4) Now, determine whether 45 degrees is more or less than 56.25 degrees.
+	//    Since it is less, we should add this new half angle to it.
+	//    To do this, we will need to find the sine of each of both the new half angle 
+	//    and the current working angle.  These sine values will be used in the cosine addition 
+	//    formula.
+	//      new_A = A + a = 45 deg + 22.5 deg = 67.5 deg
+	//      sin_B = sqrt(1 - (B * B)) = sqrt(1 - (~0.707 * ~0.707)) = ~0.707
+	//      sin_b = sqrt(1 - (b * b)) = sqrt(1 - (~0.924 * ~0.924)) = ~0.383
+	//      new_B = (B * b) - (sin_B * sin_b) = (~0.707 * ~0.924) - (~0.707 * ~0.383) = ~0.383
+	// 5) new_A and new_B become the new values of A and B respectively.
+	//      A = new_A = 67.5 deg
+	//      B = new_B = ~0.383
+	// 6) Now, divide the angle in half again.
+	//      new_a = a / 2 = 22.5 deg / 2 = 11.25 deg
+	//      new_b = sqrt((1 + b) / 2) = sqrt((1 + ~0.924) / 2) = ~0.981
+	// 7) new_a and new_b become the new values of a and b respectively.
+	//      a = new_a = 11.25 deg
+	//      b = new_b = ~0.981
+	// 8) Now, determine whether 67.5 degrees is more or less than 56.25 degrees.
+	//    Since it is more, we should subtract this new half angle from it.
+	//    To do this, we will need to find the sine of each of both the new half angle 
+	//    and the current working angle.  These sine values will be used in the cosine 
+	//    subtraction formula.
+	//      new_A = A - a = 67.5 deg - 11.25 deg = 56.25 deg
+	//      sin_B = sqrt(1 - (B * B)) = sqrt(1 - (~0.383 * ~0.383)) = ~0.924
+	//      sin_b = sqrt(1 - (b * b)) = sqrt(1 - (~0.981 * ~0.981)) = ~0.195
+	//      new_B = (B * b) + (sin_B * sin_b) = (~0.383 * ~0.981) + (~0.924 * ~0.195) = ~0.556
+	// 9) new_A and new_B become the new values of A and B respectively.
+	//      A = new_A = 56.25 deg
+	//      B = new_B = ~0.556
+	// And there you have it.  The angle of 56.25 degrees with a cosine value of approximately 0.556.
+	//
+	// Below is the implementation of this:
 	
 	register double working_angle;
 	register double half_angle;
 	register double working_angle_value;
 	register double half_angle_value;
+	
+	// Initialize to 45 degrees (M_PI_4) and sqrt(2) / 2
 	working_angle = M_PI_4;
 	half_angle = working_angle;
 	working_angle_value = sqrt(2.0) / 2.0;
 	half_angle_value = working_angle_value;
+	
+	// Begin iterating
 	while (working_angle != x && half_angle > 0.0 && half_angle_value > 0.0) {
-		//printf("[Trace B] working_angle = %f, working_angle_value = %f\n", working_angle, working_angle_value);
+		// Half the angle
 		half_angle /= 2.0;
 		half_angle_value = sqrt((half_angle_value + 1) / 2);
 		
 		register double sin_working_value;
 		register double sin_half_value;
+		
+		// Use the Pythagorean Theorem / Unit Circle formula to find the sin values 
+		// of the half angle and the current working angle.
 		sin_working_value = sqrt(1 - (working_angle_value * working_angle_value));
 		sin_half_value = sqrt(1 - (half_angle_value * half_angle_value));
+		
+		// Do we need to add or subtract the half angle from the current approximation 
+		// to get closer to the angle we are trying to approximate (x)?
 		if (working_angle < x) {
+			// Add the half angle
 			working_angle += half_angle;
 			working_angle_value = (working_angle_value * half_angle_value) - (sin_working_value * sin_half_value);
 		} else {
+			// Subtract the half angle
 			working_angle -= half_angle;
 			working_angle_value = (working_angle_value * half_angle_value) + (sin_working_value * sin_half_value);
 		}
-		//printf("[Trace C] working_angle = %f, working_angle_value = %f\n", working_angle, working_angle_value);
 	}
 	
+	// Take the resultant working angle approximated cosine value.
+	// Multiply it by the return sign to get the correct negation for the quadrant.
+	// Return the final value.
 	return working_angle_value * ret_val_sign;
-	
-	/*
-	register double angle_val = M_PI_4;
-	register double angle_cos = sqrt(2.0) / 2.0;
-	register double half_angle = M_PI_4;
-	register double half_cos = angle_cos;
-	while (angle_val != x && half_angle > 0.0 && half_cos > 0.0) {
-		register double angle_sin;
-		register double half_sin;
-		half_angle /= 2.0;
-		//printf("[TraceA %f: %f]\n", angle_val, (1.0 + half_cos) / 2.0);
-		half_cos = sqrt((1.0 + half_cos) / 2.0); // Half-angle formula
-		printf("[TraceBa %f: %f]\n", angle_val, 1.0 - (half_cos * half_cos));
-		return sqrt(1.0 - (half_cos * half_cos));
-		printf("[TraceBb %f: %f]\n", angle_val, sqrt(1.0 - (half_cos * half_cos)));
-		half_sin = sqrt(1.0 - (half_cos * half_cos)); // Pythagorean Theorem
-		*/
-		//unsigned long int traceval_a = (unsigned long int)(1.0 - (angle_cos * angle_cos));
-		/*
-		double d0 = angle_cos;
-		unsigned long int traceval_a = *((unsigned long int*)(&d0));
-		unsigned int traceval_b = (unsigned int)(0xFFFFFFFF & (traceval_a >> 32));
-		unsigned int traceval_c = (unsigned int)(0xFFFFFFFF & (traceval_a >>  0));
-		char bfr[50];
-		itoa(traceval_b, bfr, 50, -16, 8);
-		write(1, bfr, 8);
-		itoa(traceval_c, bfr, 50, -16, 8);
-		write(1, bfr, 8);
-		printf("[TraceC %f: %f]\n", angle_val, angle_cos);
-		*/
-		/*
-		angle_sin = sqrt(1.0 - (angle_cos * angle_cos)); // Pythagorean Theorem
-		if (angle_val < x) {
-			angle_val += half_angle;
-			angle_cos = (angle_cos * half_cos) - (angle_sin * half_sin);
-			printf("TraceA %f\n", angle_cos);
-		} else {
-			angle_val -= half_angle;
-			printf("TraceB %f\n", (angle_cos * half_cos));
-			printf("TraceB %f\n", angle_sin);
-			printf("TraceB %f\n", half_sin);
-			angle_cos = (angle_cos * half_cos) + (angle_sin * half_sin);
-		}
-	}
-	
-	if (ret_val_sign == 1) {
-		return angle_cos;
-	} else {
-		return -angle_cos;
-	}
-	*/
 }
 
 float cosf(register float x) {
